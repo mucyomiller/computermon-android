@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "980558681112",
+    "firebase_url": "https://computermon-b9477.firebaseio.com",
+    "project_id": "computermon-b9477",
+    "storage_bucket": "computermon-b9477.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:980558681112:android:fd8d02e32d5d5d9b",
+        "android_client_info": {
+          "package_name": "com.computermon.monitorapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "980558681112-v8l0b62oljuu8def01d34k5d34a2ours.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.computermon.monitorapp",
+            "certificate_hash": "e64cdcf059e8d130ac55d37255819c6ed172e425"
+          }
+        },
+        {
+          "client_id": "980558681112-2r7ibqcnb1bko1oud4ta8k249p9ap4i9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBXFJLKWBu1yV1o2nhAvZbc40tlQW61LPs"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "980558681112-2r7ibqcnb1bko1oud4ta8k249p9ap4i9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
