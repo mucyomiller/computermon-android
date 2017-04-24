@@ -99,9 +99,6 @@ public class RegisterActivity extends AppCompatActivity {
     public void registerUser(String name, String email, String password){
 
         Log.d(TAG, "createAccount:" + email);
-        if (!validateForm()) {
-            return;
-        }
 
         showProgressDialog();
 
@@ -114,6 +111,13 @@ public class RegisterActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+                            Toast.makeText(RegisterActivity.this, "User Registered Successfully.",
+                                    Toast.LENGTH_SHORT).show();
+                            Intent i = new Intent(getApplicationContext(),
+                                    LoginActivity.class);
+                            startActivity(i);
+                            finish();
+
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());

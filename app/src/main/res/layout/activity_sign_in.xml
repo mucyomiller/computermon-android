@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="56dp"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp">
+
+        <TextView android:id="@+id/link_signup"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:text="@string/btn_register"
+            android:gravity="center"
+            android:textSize="36sp"
+            android:textStyle="normal|bold"
+            android:textAlignment="center"
+            android:textColor="@color/colorPrimary" />
+
+        <ImageView android:src="@mipmap/ic_launcher"
+            android:layout_width="wrap_content"
+            android:layout_marginBottom="50dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_height="150dp"
+            />
+
+        <com.google.android.gms.common.SignInButton
+            android:id="@+id/sign_in_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_shape"
+            android:visibility="visible"
+            android:layout_gravity="center"
+            android:paddingTop="50dp"
+            android:paddingBottom="50dp"/>
+
+
+
+    </LinearLayout>
+</ScrollView>

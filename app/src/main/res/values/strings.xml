@@ -11,5 +11,17 @@
     <string name="welcome">Welcome</string>
     <string name="btn_logout">LOGOUT</string>
     <string name="name">Fullname</string>
+    <string name="Monitor">Monitor Pc\'s</string>
+    <string name="view_pc">View All</string>
+    <string name="add_pc">Add PC</string>
+    <string name="title_activity_pc">PcActivity</string>
+    <string name="mac">Mac Adress</string>
+    <string name="action_save">Add</string>
+    <string name="my_pc">Computers</string>
+    <string name="there_is_no_data">No Data</string>
+    <string-array name="menu">
+        <item>Update</item>
+        <item>Delete</item>
+    </string-array>
 
 </resources>
