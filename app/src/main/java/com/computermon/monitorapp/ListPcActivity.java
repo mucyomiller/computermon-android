@@ -1,10 +1,12 @@
 package com.computermon.monitorapp;
 
 import android.app.ListActivity;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.*;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -13,6 +15,7 @@ import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -29,12 +32,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class ListPcActivity extends ListActivity {
     private TextView text;
-    private List<String> listValues;
+    private List<String> listValues, listProcess;
     private ArrayAdapter<String> myAdapter;
     private DatabaseReference mFirebaseDatabase;
     private DatabaseReference mFirebaseDB;
@@ -42,11 +47,14 @@ public class ListPcActivity extends ListActivity {
     private FirebaseAuth mFirebaseAuth;
     private FirebaseUser mFirebaseUser;
     private String selectedItem;
-    private String TAG="Pc", email,macneeded;
+    private String TAG="Pc", email,macneeded,id;
+    private List<ProcessList> proce;
     private ListView listView;
     private  String listItemName;
     private String m_Text;
     private EditText search;
+    private  AlertDialog.Builder builder;
+    private Vibrator vib;
 
 
     @Override
@@ -76,11 +84,11 @@ public class ListPcActivity extends ListActivity {
 
             }
         });
-
     }
+
     public void searchItem(String look){
 
-        Iterator<String> iter= listValues.iterator();
+        Iterator <String> iter= listValues.iterator();
         while(iter.hasNext()){
             String str=iter.next();
             if(!str.contains(look)){
@@ -90,28 +98,32 @@ public class ListPcActivity extends ListActivity {
         myAdapter.notifyDataSetChanged();
 
     }
+
+
     public void initList(){
+
         mFirebaseInstance = FirebaseDatabase.getInstance();
         mFirebaseDatabase = mFirebaseInstance.getReference("Pc");
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
         email=mFirebaseUser.getEmail();
         listView = (ListView) findViewById(android.R.id.list);
+
         mFirebaseDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 listValues = new ArrayList<String>();
                 for(DataSnapshot child : dataSnapshot.getChildren()) {
-                    if(child.getValue(Pc.class).getEmail().equals(email)) {
-                        listValues.add(child.getValue(Pc.class).getMac());
-                    }
-                }
+                    listValues.add(child.getValue(Pc.class).getMac());
 
+                }
                 text = (TextView) findViewById(R.id.mainText);
                 myAdapter = new ArrayAdapter <String>(getApplicationContext(), R.layout.row_layout, R.id.listText, listValues);
                 setListAdapter(myAdapter);
                 registerForContextMenu(listView);
+
+
 
             }
 
@@ -120,8 +132,11 @@ public class ListPcActivity extends ListActivity {
                 Log.d(TAG,"Error occured "+databaseError.getCode());
             }
         });
-
     }
+
+
+
+
 
 
 
@@ -145,12 +160,12 @@ public class ListPcActivity extends ListActivity {
         String [] menuItems =getResources().getStringArray(R.array.menu);
         String menuItemName =menuItems [menuItemIndex];
         listItemName =(String) getListView().getItemAtPosition(info.position);
-        if (menuItemName.equals("Update"))
+        if (menuItemName.equals("Edit"))
         {
             m_Text = "";
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Update "+ listItemName);
+            builder = new AlertDialog.Builder(this);
+            builder.setTitle("Edit "+ listItemName);
             final EditText input = new EditText(this);
             input.setInputType(InputType.TYPE_CLASS_TEXT);
             builder.setView(input);
@@ -165,8 +180,11 @@ public class ListPcActivity extends ListActivity {
                                     public void onDataChange(DataSnapshot dataSnapshot) {
                                         if (dataSnapshot.hasChildren()) {
                                             DataSnapshot firstChild = dataSnapshot.getChildren().iterator().next();
+
+
                                             firstChild.getRef().child("mac").setValue(m_Text);
-                                            Toast.makeText(getApplicationContext(),"Mac updated Successfully!", Toast.LENGTH_LONG).show();
+                                            Toast.makeText(getApplicationContext(), "Mac Updated!", Toast.LENGTH_LONG).show();
+
 
                                         }
                                     }
@@ -178,6 +196,7 @@ public class ListPcActivity extends ListActivity {
                                 });
                         myAdapter.notifyDataSetChanged();
                     }
+
 
             });
             builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -195,6 +214,7 @@ public class ListPcActivity extends ListActivity {
             // Toast.makeText(getApplicationContext(),"Edit is Selected "+ " On "+listItemName, Toast.LENGTH_LONG).show();
 
         }
+
         if (menuItemName.equals("Delete")){
             AlertDialog.Builder adb=new AlertDialog.Builder(ListPcActivity.this);
             adb.setTitle("Delete?");
@@ -204,7 +224,7 @@ public class ListPcActivity extends ListActivity {
             adb.setPositiveButton("Ok", new AlertDialog.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    mFirebaseDatabase.orderByChild("mac")
+                    mFirebaseDatabase.orderByChild("plateId")
                             .equalTo(listItemName)
                             .addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
@@ -212,8 +232,6 @@ public class ListPcActivity extends ListActivity {
                                     if(dataSnapshot.hasChildren()){
                                         DataSnapshot firstChild = dataSnapshot.getChildren().iterator().next();
                                         firstChild.getRef().removeValue();
-                                        Toast.makeText(getApplicationContext(),"Mac Delete", Toast.LENGTH_LONG).show();
-
                                     }
                                 }
 
@@ -240,22 +258,6 @@ public class ListPcActivity extends ListActivity {
 
         selectedItem = (String) getListView().getItemAtPosition(position);
         //String selectedItem = (String) getListAdapter().getItem(position);
-        mFirebaseDatabase.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot child : dataSnapshot.getChildren()) {
-                    if(child.getValue(Pc.class).getMac().equals(selectedItem)) {
-                        macneeded=child.getValue(Pc.class).getMac();
-                        Log.d(TAG,"email "+macneeded);
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
         mFirebaseInstance = FirebaseDatabase.getInstance();
         mFirebaseDB = mFirebaseInstance.getReference("processes");
         mFirebaseDB.addValueEventListener(new ValueEventListener() {
@@ -263,7 +265,24 @@ public class ListPcActivity extends ListActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 for(DataSnapshot adress : dataSnapshot.getChildren()) {
-                        Toast.makeText(getApplicationContext(),"Display its process here", Toast.LENGTH_LONG).show();
+//                   if(adress.getValue(Process.class).getMac().equals(selectedItem)) {
+//                       proce=new ArrayList<ProcessList>();
+//                        proce=adress.getValue(Process.class).getProcess();
+//                           Toast.makeText(getApplicationContext(),"Processes are "+proce + "in "+adress.getValue(Process.class).getProcess()+"mac is "+adress.getValue(Process.class).getMac()+"Selected Item "+selectedItem, Toast.LENGTH_LONG).show();
+//
+//
+//                   }
+
+                }
+                if(proce!=null && !proce.isEmpty()) {
+                    Intent intent = new Intent(ListPcActivity.this, listProcessActivity.class);
+                    //intent.putExtra("processes", proce);
+                    finish();
+                    startActivity(intent);
+                }
+                else{
+
+                    Toast.makeText(getApplicationContext(),"No Application to show!", Toast.LENGTH_LONG).show();
 
                 }
 
@@ -276,6 +295,12 @@ public class ListPcActivity extends ListActivity {
         });
 
 
+        // text.setText("You clicked " + selectedItem + " at position " + position);
     }
-}
 
+
+    private void requestFocus (View view){
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+    }
+
+}

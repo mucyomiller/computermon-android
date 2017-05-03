@@ -28,7 +28,8 @@
         <activity
             android:name=".PcActivity"
             android:label="@string/title_activity_pc"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".listProcessActivity"></activity>
     </application>
 
 </manifest>
