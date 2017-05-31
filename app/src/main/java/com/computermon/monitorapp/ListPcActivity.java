@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.*;
+import android.provider.SyncStateContract;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -48,13 +49,12 @@ public class ListPcActivity extends ListActivity {
     private FirebaseUser mFirebaseUser;
     private String selectedItem;
     private String TAG="Pc", email,macneeded,id;
-    private List<ProcessList> proce;
+    private List<Process_> proce;
     private ListView listView;
     private  String listItemName;
     private String m_Text;
     private EditText search;
     private  AlertDialog.Builder builder;
-    private Vibrator vib;
 
 
     @Override
@@ -160,61 +160,6 @@ public class ListPcActivity extends ListActivity {
         String [] menuItems =getResources().getStringArray(R.array.menu);
         String menuItemName =menuItems [menuItemIndex];
         listItemName =(String) getListView().getItemAtPosition(info.position);
-        if (menuItemName.equals("Edit"))
-        {
-            m_Text = "";
-
-            builder = new AlertDialog.Builder(this);
-            builder.setTitle("Edit "+ listItemName);
-            final EditText input = new EditText(this);
-            input.setInputType(InputType.TYPE_CLASS_TEXT);
-            builder.setView(input);
-            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    m_Text = input.getText().toString();
-                        mFirebaseDatabase.orderByChild("mac")
-                                .equalTo(listItemName)
-                                .addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(DataSnapshot dataSnapshot) {
-                                        if (dataSnapshot.hasChildren()) {
-                                            DataSnapshot firstChild = dataSnapshot.getChildren().iterator().next();
-
-
-                                            firstChild.getRef().child("mac").setValue(m_Text);
-                                            Toast.makeText(getApplicationContext(), "Mac Updated!", Toast.LENGTH_LONG).show();
-
-
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onCancelled(DatabaseError databaseError) {
-                                        Log.d(TAG, "Error occured " + databaseError.getCode());
-                                    }
-                                });
-                        myAdapter.notifyDataSetChanged();
-                    }
-
-
-            });
-            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.cancel();
-                }
-            });
-
-            builder.show();
-
-            myAdapter.notifyDataSetChanged();
-
-
-            // Toast.makeText(getApplicationContext(),"Edit is Selected "+ " On "+listItemName, Toast.LENGTH_LONG).show();
-
-        }
-
         if (menuItemName.equals("Delete")){
             AlertDialog.Builder adb=new AlertDialog.Builder(ListPcActivity.this);
             adb.setTitle("Delete?");
@@ -224,7 +169,7 @@ public class ListPcActivity extends ListActivity {
             adb.setPositiveButton("Ok", new AlertDialog.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    mFirebaseDatabase.orderByChild("plateId")
+                    mFirebaseDatabase.orderByChild("mac")
                             .equalTo(listItemName)
                             .addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
@@ -258,42 +203,10 @@ public class ListPcActivity extends ListActivity {
 
         selectedItem = (String) getListView().getItemAtPosition(position);
         //String selectedItem = (String) getListAdapter().getItem(position);
-        mFirebaseInstance = FirebaseDatabase.getInstance();
-        mFirebaseDB = mFirebaseInstance.getReference("processes");
-        mFirebaseDB.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                for(DataSnapshot adress : dataSnapshot.getChildren()) {
-//                   if(adress.getValue(Process.class).getMac().equals(selectedItem)) {
-//                       proce=new ArrayList<ProcessList>();
-//                        proce=adress.getValue(Process.class).getProcess();
-//                           Toast.makeText(getApplicationContext(),"Processes are "+proce + "in "+adress.getValue(Process.class).getProcess()+"mac is "+adress.getValue(Process.class).getMac()+"Selected Item "+selectedItem, Toast.LENGTH_LONG).show();
-//
-//
-//                   }
-
-                }
-                if(proce!=null && !proce.isEmpty()) {
-                    Intent intent = new Intent(ListPcActivity.this, listProcessActivity.class);
-                    //intent.putExtra("processes", proce);
-                    finish();
-                    startActivity(intent);
-                }
-                else{
-
-                    Toast.makeText(getApplicationContext(),"No Application to show!", Toast.LENGTH_LONG).show();
-
-                }
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
+        Intent intent = new Intent(ListPcActivity.this, listProcessActivity.class);
+        intent.putExtra("macadress",selectedItem);
+        finish();
+        startActivity(intent);
 
         // text.setText("You clicked " + selectedItem + " at position " + position);
     }

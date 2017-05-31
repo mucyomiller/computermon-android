@@ -1,20 +1,19 @@
 package com.computermon.monitorapp;
 
+import android.os.Parcelable;
+
 import com.google.firebase.database.IgnoreExtraProperties;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Sam on 4/25/2017.
  */
 @IgnoreExtraProperties
 public class Process {
-
-    String mac;
- List<ProcessList> process =new ArrayList<>();
+    private String mac;
+    private List<Process_> process = null;
 
     public Process() {
     }
@@ -27,12 +26,13 @@ public class Process {
         this.mac = mac;
     }
 
-    public List<ProcessList> getProcess() {
+    public List<Process_> getProcess() {
         return process;
     }
 
-    public void setProcess(List<ProcessList> process) {
+    public void setProcess(List<Process_> process) {
         this.process = process;
     }
+
 }
 

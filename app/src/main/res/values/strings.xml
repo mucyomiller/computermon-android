@@ -19,9 +19,13 @@
     <string name="action_save">Add</string>
     <string name="my_pc">Computers</string>
     <string name="there_is_no_data">No Data</string>
+    <string name="my_app">Applications</string>
     <string-array name="menu">
-        <item>Update</item>
+        <item>Refresh</item>
         <item>Delete</item>
+    </string-array>
+    <string-array name="mn">
+        <item>Close</item>
     </string-array>
 
 </resources>
