@@ -45,8 +45,7 @@ public class listProcessActivity extends ListActivity {
     private ListView listView;
     private  String listItemName;
     private String mac;
-    private DatabaseReference mFirebaseDatabase;
-    private DatabaseReference mFirebaseDB;
+    private DatabaseReference mFirebaseDB,mFirebaseDBs;
     private FirebaseDatabase mFirebaseInstance;
     private FirebaseAuth mFirebaseAuth;
     private EditText search;
@@ -176,13 +175,14 @@ public class listProcessActivity extends ListActivity {
             adb.setPositiveButton("Ok", new AlertDialog.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    mFirebaseDatabase.orderByChild("processes")
+                    mFirebaseDB.orderByChild("pName")
                             .equalTo(listItemName)
                             .addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     if(dataSnapshot.hasChildren()){
                                         DataSnapshot firstChild = dataSnapshot.getChildren().iterator().next();
+
                                         firstChild.getRef().removeValue();
                                     }
                                 }
@@ -196,7 +196,7 @@ public class listProcessActivity extends ListActivity {
                 }
             });
             adb.show();
-            ///Toast.makeText(getApplicationContext(),"Delete is Selected "+ " On "+listItemName, Toast.LENGTH_LONG).show();
+            //Toast.makeText(getApplicationContext(),"Delete is Selected "+ " On "+listItemName, Toast.LENGTH_LONG).show();
 
         }
         return true;
