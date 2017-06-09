@@ -26,6 +26,7 @@
     </string-array>
     <string-array name="mn">
         <item>Close</item>
+        <item>Notify</item>
     </string-array>
 
 </resources>

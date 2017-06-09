@@ -50,6 +50,7 @@ public class listProcessActivity extends ListActivity {
     private FirebaseDatabase mFirebaseInstance;
     private FirebaseAuth mFirebaseAuth;
     private EditText search;
+    private  String m_Text;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -186,6 +187,47 @@ public class listProcessActivity extends ListActivity {
         String [] menuItems =getResources().getStringArray(R.array.mn);
         String menuItemName =menuItems [menuItemIndex];
         listItemName =(String) getListView().getItemAtPosition(info.position);
+        if (menuItemName.equals("Notify"))
+        {
+           m_Text = "";
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(" Write Notification message to "+ mactosave);
+            final EditText input = new EditText(this);
+            input.setInputType(InputType.TYPE_CLASS_TEXT);
+            builder.setView(input);
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    m_Text = input.getText().toString();
+
+                    mFirebaseInstance = FirebaseDatabase.getInstance();
+                    mFirebaseDB = mFirebaseInstance.getReference("notification");
+                    Message a =new Message();
+                    a.setMac(mactosave);
+                    a.setNotification(m_Text);
+                    mFirebaseDB.push().setValue(a);
+                        Toast.makeText(getApplicationContext(),mactosave +" Notified!", Toast.LENGTH_LONG).show();
+
+
+
+                }
+            });
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+
+            builder.show();
+
+            myAdapter.notifyDataSetChanged();
+
+
+            // Toast.makeText(getApplicationContext(),"Edit is Selected "+ " On "+listItemName, Toast.LENGTH_LONG).show();
+
+        }
         if (menuItemName.equals("Close")){
             AlertDialog.Builder adb=new AlertDialog.Builder(listProcessActivity.this);
             adb.setTitle("Close Remotely?");
