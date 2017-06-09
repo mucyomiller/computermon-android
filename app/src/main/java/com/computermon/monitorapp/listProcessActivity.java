@@ -42,9 +42,10 @@ public class listProcessActivity extends ListActivity {
     private String email;
     private String macneeded;
     private List<Process_> proce;
+    private String killed;
     private ListView listView;
     private  String listItemName;
-    private String mac;
+    private String mac,mactosave;
     private DatabaseReference mFirebaseDB,mFirebaseDBs;
     private FirebaseDatabase mFirebaseInstance;
     private FirebaseAuth mFirebaseAuth;
@@ -107,6 +108,7 @@ public class listProcessActivity extends ListActivity {
                     mac=a.getStringExtra("macadress");
 
                     if(adress.getValue(Process.class).getMac().equals(mac)) {
+                        mactosave=mac;
                         proce=new ArrayList<Process_>();
                         proce=adress.getValue(Process.class).getProcess();
 
@@ -116,16 +118,32 @@ public class listProcessActivity extends ListActivity {
 
                 }
                 if(proce!=null && !proce.isEmpty()) {
+                    mFirebaseInstance = FirebaseDatabase.getInstance();
+                    mFirebaseDB = mFirebaseInstance.getReference("killed");
+                    mFirebaseDB.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
 
-                   // Toast.makeText(getApplicationContext(),proce.get(0).getPName()+ proce.size(), Toast.LENGTH_LONG).show();
-                    listValues = new ArrayList<String>();
-                    for(int i=0;i<proce.size();i++){
-                        listValues.add(proce.get(i).getPName());
-                    }
-                    text = (TextView) findViewById(R.id.mainText);
-                    myAdapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.process_layout, R.id.listText, listValues);
-                    setListAdapter(myAdapter);
-                    registerForContextMenu(listView);
+                            for(DataSnapshot adress : dataSnapshot.getChildren()) {
+                                killed = adress.getValue(Closed.class).getpName();
+
+                                listValues = new ArrayList<String>();
+                                for (int i = 0; i < proce.size(); i++) {
+                                    if (!proce.get(i).getPName().equals(killed)) {
+                                        listValues.add(proce.get(i).getPName());
+                                    }
+                                }
+                                text = (TextView) findViewById(R.id.mainText);
+                                myAdapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.process_layout, R.id.listText, listValues);
+                                setListAdapter(myAdapter);
+                                registerForContextMenu(listView);
+                            }}
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
 
 
                 }
@@ -136,6 +154,8 @@ public class listProcessActivity extends ListActivity {
                 }
 
             }
+
+
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -169,29 +189,22 @@ public class listProcessActivity extends ListActivity {
         if (menuItemName.equals("Close")){
             AlertDialog.Builder adb=new AlertDialog.Builder(listProcessActivity.this);
             adb.setTitle("Close Remotely?");
-            adb.setMessage("Are you sure you want to remotely close the application" + listItemName);
+            adb.setMessage("Are you sure you want to remotely close the application " + listItemName);
             adb.setNegativeButton("Cancel", null);
 
             adb.setPositiveButton("Ok", new AlertDialog.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    mFirebaseDB.orderByChild("pName")
-                            .equalTo(listItemName)
-                            .addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                    if(dataSnapshot.hasChildren()){
-                                        DataSnapshot firstChild = dataSnapshot.getChildren().iterator().next();
 
-                                        firstChild.getRef().removeValue();
-                                    }
-                                }
+                    mFirebaseInstance = FirebaseDatabase.getInstance();
+                    mFirebaseDB = mFirebaseInstance.getReference("killed");
+                    Closed a =new Closed();
+                    a.setMac(mactosave);
+                   a.setpName(listItemName);
+                    mFirebaseDB.push().setValue(a);
+                    Toast.makeText(getApplicationContext(),"Application closed!", Toast.LENGTH_LONG).show();
 
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
-                                    Log.d(TAG,"Error occured "+databaseError.getCode());
-                                }
-                            });
+
                     myAdapter.notifyDataSetChanged();
                 }
             });
